@@ -188,13 +188,9 @@ Create a `.env` file inside Backend:
 
 ```env
 PORT=3000
-
 MONGO_URL=your_mongodb_connection_string
-
 JWT_SECRET=your_jwt_secret
-
 GROQ_API_KEY=your_groq_api_key
-
 CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
@@ -271,14 +267,28 @@ Users can:
 
 # 📸 Screenshots
 
-Add screenshots here:
 
 ```text
-Home Page
-Blog Page
-AI Chatbot
-Create Blog
-Collaboration Room
+Signin Page:
+![alt text](image.png)
+Home Page:
+![alt text](image-1.png)
+Blog Page:
+![alt text](image-2.png)
+Comment Section:
+![alt text](image-3.png)
+AI Chatbot:
+![alt text](image-4.png)
+Create Blog:
+![alt text](image-5.png)
+Admin Home Page:
+![alt text](image-7.png)
+Admin Comment section:
+![alt text](image-8.png)
+Contact Section:
+![alt text](image-6.png)
+Collaboration Room: 
+![alt text](image-9.png)
 ```
 
 ---
