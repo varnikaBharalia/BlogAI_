@@ -4,7 +4,7 @@ const userRoutes = require('./routes/user');
 const blogRoutes = require('./routes/blog');
 const HomeRoutes = require('./routes/Home');
 const ChatBotRoutes = require('./routes/ChatBot');
-const {checkForAuthenticationCookie} = require('./middleware/auth');
+const { checkForAuthenticationCookie } = require('./middleware/auth');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const connectDB = require('./db/Connect');
@@ -15,15 +15,14 @@ connectDB();
 
 const app = express();
 const port = process.env.PORT || 3000;
-app.use(
-  cors({
-    origin: [
-      "http://localhost:5173",
-      "https://blog-ai-two-nu.vercel.app",
-    ],
-    credentials: true,
-  })
-);
+
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    "https://blog-ai-two-nu.vercel.app",
+  ],
+  credentials: true,
+}));
 
 app.use(express.json());
 
@@ -36,9 +35,9 @@ app.use(cookieParser());
 
 app.use(checkForAuthenticationCookie());
 
-app.use('/user',userRoutes);
+app.use('/user', userRoutes);
 app.use('/', HomeRoutes);
-app.use("/blog",blogRoutes);
-app.use("/chatbot",ChatBotRoutes);
+app.use("/blog", blogRoutes);
+app.use("/chatbot", ChatBotRoutes);
 
-app.listen(process.env.PORT,()=>{console.log(`Server is running on port ${process.env.PORT}`)});
+app.listen(process.env.PORT, () => { console.log(`Server is running on port ${process.env.PORT}`) });
