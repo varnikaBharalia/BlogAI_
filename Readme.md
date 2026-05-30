@@ -267,25 +267,25 @@ Users can:
 
 # 📸 Screenshots
 
-###Signin Page:
+### Signin Page:
 ![alt text](image.png)
-###Home Page:
+### Home Page:
 ![alt text](image-1.png)
-###Blog Page:
+### Blog Page:
 ![alt text](image-2.png)
-###Comment Section:
+### Comment Section:
 ![alt text](image-3.png)
-###AI Chatbot:
+### AI Chatbot:
 ![alt text](image-4.png)
-###Create Blog:
+### Create Blog:
 ![alt text](image-5.png)
-###Admin Home Page:
+### Admin Home Page:
 ![alt text](image-7.png)
-###Admin Comment section:
+### Admin Comment section:
 ![alt text](image-8.png)
-###Contact Section:
+### Contact Section:
 ![alt text](image-6.png)
-###Collaboration Room: 
+### Collaboration Room: 
 ![alt text](image-9.png)
 
 ---
@@ -307,8 +307,6 @@ Users can:
 # 👨‍💻 Author
 
 **Varnika Bharalia**
-
-GitHub:
 
 ---
 

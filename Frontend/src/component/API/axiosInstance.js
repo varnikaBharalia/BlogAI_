@@ -3,7 +3,8 @@ import axios from "axios";
 
 const axiosInstance = axios.create({
   // baseURL: "https://blogaibackend.vercel.app/",
-  baseURL: "https://blogai-upqk.onrender.com/",
+  // baseURL: "https://blogai-upqk.onrender.com/",
+  baseURL: "http://localhost:3000",
   withCredentials: true, 
 });
 

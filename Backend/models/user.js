@@ -29,23 +29,20 @@ const userSchema = new Schema({
     },
 },{timestamps:true});
 
-userSchema.pre("save",function(next){
+userSchema.pre("save", function(){
     const user = this;
 
-    if(!user.isModified("password")) return next();
+    if(!user.isModified("password")) return;
 
     const salt = randomBytes(16).toString();
 
     const hashPassword = createHmac("sha256",salt)
-
-    .update(user.password)  
-    .digest("hex");        
+        .update(user.password)
+        .digest("hex");
 
     user.salt = salt;
-    user.password = hashPassword
-
-    next();
-})
+    user.password = hashPassword;
+});
 
 const User = model("User",userSchema);
 module.exports = User;
