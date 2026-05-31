@@ -268,25 +268,16 @@ Users can:
 # 📸 Screenshots
 
 ### Signin Page:
-![alt text](image.png)
+### SignUp Page:
 ### Home Page:
-![alt text](image-1.png)
 ### Blog Page:
-![alt text](image-2.png)
 ### Comment Section:
-![alt text](image-3.png)
 ### AI Chatbot:
-![alt text](image-4.png)
 ### Create Blog:
-![alt text](image-5.png)
 ### Admin Home Page:
-![alt text](image-7.png)
 ### Admin Comment section:
-![alt text](image-8.png)
 ### Contact Section:
-![alt text](image-6.png)
 ### Collaboration Room: 
-![alt text](image-9.png)
 
 ---
 

@@ -55,6 +55,8 @@ const io = new Server(server, {
   },
 });
 
+const roomUsers = {};
+
 io.on("connection", (socket) => {
   console.log("A user connected to WebSockets:", socket.id);
 
