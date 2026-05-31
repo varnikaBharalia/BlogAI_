@@ -1,10 +1,11 @@
 
 import React from "react";
-
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import UseUser from "../UserContext/UserContext";
 import toast from "react-hot-toast";
 import axiosInstance from "../API/axiosInstance";
+import Swal from "sweetalert2";
+import { MdGroupAdd } from "react-icons/md";
 
 export default function Header() {
   const { CurrentUser: user, setCurrentUser } = UseUser();
@@ -34,6 +35,33 @@ export default function Header() {
     { to: "/about", label: "About" },
     { to: "/contact", label: "Contact" },
   ];
+
+
+  const handleJoinRoomClick = async () => {
+    // Open a sleek SweetAlert popup asking for the code
+    const { value: inviteCode } = await Swal.fire({
+      title: "Join Collaboration Room",
+      input: "text",
+      inputLabel: "Enter your secure invite code",
+      inputPlaceholder: "Paste code here...",
+      showCancelButton: true,
+      confirmButtonText: "Join",
+      confirmButtonColor: "#4f46e5",
+      cancelButtonColor: "#94a3b8",
+    });
+
+    // If they typed something and hit "Join"
+    if (inviteCode) {
+      if (!inviteCode.includes("---")) {
+        toast.error("Invalid Invite Code format.");
+        return;
+      }
+
+      // Extract the blogId and navigate
+      const blogId = inviteCode.split("---")[0];
+      navigate(`/blog/${blogId}?room=${inviteCode}`);
+    }
+  };
 
   return (
     <header
@@ -103,61 +131,100 @@ export default function Header() {
             );
           })}
         </nav>
+        {/* Right Side: Action Buttons */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "16px" // This controls the tight spacing between the 3 buttons
+          }}
+        >
 
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          {user && (
-            <Link
-              to="/addBlog"
-              style={{
-                textDecoration: "none",
-                padding: "8px 20px",
-                borderRadius: "999px",
-                backgroundColor: "#4f46e5",
-                color: "#fff",
-                fontSize: "0.88rem",
-                fontWeight: 600,
-                fontFamily: "'Segoe UI', sans-serif",
-                display: "inline-block",
-              }}
-            >
-              + Create Blog
-            </Link>
-          )}
+          {/* Sleek Join Room Icon Button */}
+          <button
+          onClick={handleJoinRoomClick}
+          title="Join a Room"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            background: "none",
+            border: "1.5px dashed #a5b4fc",
+            padding: "6px 12px",
+            borderRadius: "8px",
+            cursor: "pointer",
+            color: "#4f46e5",
+            fontWeight: 600,
+            fontSize: "0.9rem",
+            transition: "all 0.2s",
+          }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = "#4f46e5";
+              e.currentTarget.style.color = "#ffffff";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = "transparent";
+              e.currentTarget.style.color = "#4f46e5";
+            }}
+          >
+            <MdGroupAdd size={18} />
+          </button>
 
-          {user ? (
-            <button
-              onClick={handleLogout}
-              style={{
-                background: "none",
-                border: "1.5px solid #e2e8f0",
-                padding: "7px 16px",
-                borderRadius: "999px",
-                color: "#64748b",
-                fontSize: "0.88rem",
-                fontWeight: 500,
-                fontFamily: "'Segoe UI', sans-serif",
-                cursor: "pointer",
-              }}
-            >
-              LogOut
-            </button>
-          ) : (
-            <Link
-              to="/signin"
-              style={{
-                textDecoration: "none",
-                padding: "7px 18px",
-                borderRadius: "999px",
-                border: "1.5px solid #4f46e5",
-                color: "#4f46e5",
-                fontSize: "0.88rem",
-                fontWeight: 500,
-                fontFamily: "'Segoe UI', sans-serif",
-              }}
-            >
-              Sign In
-            </Link>
-          )}
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            {user && (
+              <Link
+                to="/addBlog"
+                style={{
+                  textDecoration: "none",
+                  padding: "8px 20px",
+                  borderRadius: "999px",
+                  backgroundColor: "#4f46e5",
+                  color: "#fff",
+                  fontSize: "0.88rem",
+                  fontWeight: 600,
+                  fontFamily: "'Segoe UI', sans-serif",
+                  display: "inline-block",
+                }}
+              >
+                + Create Blog
+              </Link>
+            )}
+
+            {user ? (
+              <button
+                onClick={handleLogout}
+                style={{
+                  background: "none",
+                  border: "1.5px solid #e2e8f0",
+                  padding: "7px 16px",
+                  borderRadius: "999px",
+                  color: "#64748b",
+                  fontSize: "0.88rem",
+                  fontWeight: 500,
+                  fontFamily: "'Segoe UI', sans-serif",
+                  cursor: "pointer",
+                }}
+              >
+                LogOut
+              </button>
+            ) : (
+              <Link
+                to="/signin"
+                style={{
+                  textDecoration: "none",
+                  padding: "7px 18px",
+                  borderRadius: "999px",
+                  border: "1.5px solid #4f46e5",
+                  color: "#4f46e5",
+                  fontSize: "0.88rem",
+                  fontWeight: 500,
+                  fontFamily: "'Segoe UI', sans-serif",
+                }}
+              >
+                Sign In
+              </Link>
+            )}
+          </div>
         </div>
       </div>
     </header>

@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import UseUser from "../UserContext/UserContext";
 import toast from "react-hot-toast";
 import axiosInstance from "../API/axiosInstance";
@@ -17,6 +17,8 @@ export default function Blog() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { CurrentUser: user, setCurrentUser } = UseUser();
+  const [searchParams] = useSearchParams();
+  const roomFromUrl = searchParams.get("room");
   const areaRef = useRef(null);
 
   const [blog, setBlog] = useState(null);
@@ -29,6 +31,9 @@ export default function Blog() {
   const [currentRoom, setCurrentRoom] = useState(null);
   const socketRef = useRef(null);
   const [showCollaboratorPanel, setShowCollaboratorPanel] = useState(false);
+  
+  // NEW: Track who is currently in the room
+  const [activeCollaborators, setActiveCollaborators] = useState([]);
 
   useEffect(() => {
     const socket = io(baseURL);
@@ -42,17 +47,42 @@ export default function Blog() {
       toast.success("The collaboration session has ended.");
       setEditable(false);
       setShowCollaboratorPanel(false);
+      setActiveCollaborators([]); // Clear the list
     };
 
+    // Listen for real-time updates and popups
+    socket.on("room-users-update", (users) => setActiveCollaborators(users));
+    socket.on("user-joined", (name) => toast.success(`${name} joined the room!`, { icon: '👋' }));
+    socket.on("user-left", (name) => toast(`${name} left the room.`, { icon: '🚶' }));
+    
     socket.on("receive-body", handleRecieveData);
     socket.on("room-ended", handleroomEnd);
 
     return () => {
       socket.off("receive-body", handleRecieveData);
       socket.off("room-ended", handleroomEnd);
+      socket.off("room-users-update");
+      socket.off("user-joined");
+      socket.off("user-left");
       socket.disconnect();
     };
   }, []);
+
+  // NEW: Auto-join if someone clicks a smart link
+  useEffect(() => {
+    if (roomFromUrl && socketRef.current && user) {
+      setShowCollaboratorPanel(true);
+      setCustomRoomId(roomFromUrl);
+      
+      socketRef.current.emit("join-room", { 
+        roomId: roomFromUrl, 
+        user: { _id: user._id, name: user.name, profileImage: user.profileImage } 
+      });
+      
+      setCurrentRoom(roomFromUrl);
+      setEditable(true);
+    }
+  }, [roomFromUrl, user]);
 
   useEffect(() => {
     async function fetchBlog() {
@@ -93,6 +123,14 @@ export default function Blog() {
       setEditable(false);
       setNewCoverImage(null);
       toast.success("Blog updated successfully!");
+
+      if (currentRoom && socketRef.current) {
+        socketRef.current.emit("end-room", { roomId: currentRoom });
+        
+        setCurrentRoom(null);
+        setCustomRoomId("");
+      }
+
     } catch (err) {
       toast.error("Failed to update blog.");
     }
@@ -121,14 +159,14 @@ export default function Blog() {
       toast.error("Failed to delete comment.");
     }
   };
+
   const emitBody = useCallback(
     debounce((body) => {
-      // Changed blog?._id to currentRoom so it matches the joined room
       if (socketRef.current && editable && currentRoom) {
         socketRef.current.emit("send-body", { roomId: currentRoom, body });
       }
     }, 500),
-    [socketRef, editable, currentRoom] // Added currentRoom to dependencies
+    [socketRef, editable, currentRoom] 
   );
 
   const handleChange = (e) => {
@@ -236,32 +274,10 @@ export default function Blog() {
           setCurrentRoom={setCurrentRoom}
           onEditableChange={setEditable}
           onClose={() => setShowCollaboratorPanel(false)}
+          activeCollaborators={activeCollaborators} // Passed down to the panel!
         />
       )}
 
-      {/* Hero Cover Image */}
-      {/* <div
-        style={{
-          width: "100%",
-          maxHeight: "480px",
-          overflow: "hidden",
-        }}
-      >
-        <img
-          src={
-            newCoverImage
-              ? URL.createObjectURL(newCoverImage)
-              : blog.coverImage
-          }
-          alt="Blog Cover"
-          style={{
-            width: "100%",
-            height: "480px",
-            objectFit: "cover",
-            display: "block",
-          }}
-        />
-      </div> */}
       {/* Hero Cover Image */}
       <div
         style={{
@@ -416,7 +432,6 @@ export default function Blog() {
           rows={1}
           style={{
             width: "100%",
-            // border: "none",
             outline: "none",
             resize: "none",
             fontFamily: "'Georgia', serif",

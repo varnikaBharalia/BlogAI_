@@ -14,14 +14,13 @@ export default function CollaboratorPanel({
   onClose,
 }) {
   const [isConnected, setIsConnected] = useState(false);
-
+  
   const generateRandomRoomId = () => {
-    // Generates a random 8-character string
     const randomString = Math.random().toString(36).substring(2, 10);
-    setCustomRoomId(`room-${randomString}`);
+    // This embeds the blogId directly into the code
+    setCustomRoomId(`${blogId}---${randomString}`);
     toast.success("Secure Invite Code generated!");
   };
-
   const copyToClipboard = () => {
     if (!customRoomId) return;
     navigator.clipboard.writeText(customRoomId);

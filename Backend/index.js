@@ -58,10 +58,29 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
   console.log("A user connected to WebSockets:", socket.id);
 
-  socket.on("join-room", ({ roomId, userId }) => {
+  // socket.on("join-room", ({ roomId, userId }) => {
+  //   socket.join(roomId);
+  //   console.log(`User ${userId} joined room ${roomId}`);
+  // });
+
+  socket.on("join-room", ({ roomId, user }) => {
     socket.join(roomId);
-    console.log(`User ${userId} joined room ${roomId}`);
+    socket.roomId = roomId;
+    socket.user = user;
+
+    if (!roomUsers[roomId]) roomUsers[roomId] = [];
+    if (!roomUsers[roomId].find(u => u._id === user._id)) {
+      roomUsers[roomId].push(user);
+    }
+
+    io.to(roomId).emit("room-users-update", roomUsers[roomId]);
+
+    // NEW: Broadcast to everyone ELSE that this user joined
+    socket.to(roomId).emit("user-joined", user.name);
+
+    console.log(`User ${user.name} joined room ${roomId}`);
   });
+
 
   socket.on("send-body", ({ roomId, body }) => {
     // Broadcast the updated text to everyone ELSE in that specific room
@@ -75,9 +94,24 @@ io.on("connection", (socket) => {
     io.in(roomId).socketsLeave(roomId);
   });
 
+  // socket.on("disconnect", () => {
+  //   console.log("User disconnected:", socket.id);
+  // });
+
   socket.on("disconnect", () => {
+    if (socket.roomId && socket.user) {
+      roomUsers[socket.roomId] = roomUsers[socket.roomId].filter(
+        (u) => u._id !== socket.user._id
+      );
+      io.to(socket.roomId).emit("room-users-update", roomUsers[socket.roomId]);
+      
+      // NEW: Broadcast to the room that this user left
+      io.to(socket.roomId).emit("user-left", socket.user.name); 
+    }
     console.log("User disconnected:", socket.id);
   });
+
+
 });
 
 server.listen(process.env.PORT || 3000, () => {
