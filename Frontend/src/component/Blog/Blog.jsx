@@ -121,14 +121,14 @@ export default function Blog() {
       toast.error("Failed to delete comment.");
     }
   };
-
   const emitBody = useCallback(
     debounce((body) => {
-      if (socketRef.current && editable) {
-        socketRef.current.emit("send-body", { roomId: blog?._id, body });
+      // Changed blog?._id to currentRoom so it matches the joined room
+      if (socketRef.current && editable && currentRoom) {
+        socketRef.current.emit("send-body", { roomId: currentRoom, body });
       }
     }, 500),
-    [socketRef, editable]
+    [socketRef, editable, currentRoom] // Added currentRoom to dependencies
   );
 
   const handleChange = (e) => {
@@ -262,34 +262,34 @@ export default function Blog() {
           }}
         />
       </div> */}
-{/* Hero Cover Image */}
-<div
-  style={{
-    width: "100%",
-    display: "flex",
-    justifyContent: "center",
-    marginBottom: "30px",
-    marginTop: "20px",
-  }}
->
-  <img
-    src={
-      newCoverImage
-        ? URL.createObjectURL(newCoverImage)
-        : blog.coverImage
-    }
-    alt="Blog Cover"
-    style={{
-      maxWidth: "800px",
-      maxHeight: "350px",
-      width: "auto",
-      height: "auto",
-      borderRadius: "12px",
-      objectFit: "contain",
-      boxShadow: "0 8px 20px rgba(0,0,0,0.08)",
-    }}
-  />
-</div>
+      {/* Hero Cover Image */}
+      <div
+        style={{
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+          marginBottom: "30px",
+          marginTop: "20px",
+        }}
+      >
+        <img
+          src={
+            newCoverImage
+              ? URL.createObjectURL(newCoverImage)
+              : blog.coverImage
+          }
+          alt="Blog Cover"
+          style={{
+            maxWidth: "800px",
+            maxHeight: "350px",
+            width: "auto",
+            height: "auto",
+            borderRadius: "12px",
+            objectFit: "contain",
+            boxShadow: "0 8px 20px rgba(0,0,0,0.08)",
+          }}
+        />
+      </div>
       {editable && (
         <div style={{ maxWidth: "760px", margin: "12px auto", padding: "0 24px" }}>
           <label

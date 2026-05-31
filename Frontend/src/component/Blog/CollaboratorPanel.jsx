@@ -15,6 +15,19 @@ export default function CollaboratorPanel({
 }) {
   const [isConnected, setIsConnected] = useState(false);
 
+  const generateRandomRoomId = () => {
+    // Generates a random 8-character string
+    const randomString = Math.random().toString(36).substring(2, 10);
+    setCustomRoomId(`room-${randomString}`);
+    toast.success("Secure Invite Code generated!");
+  };
+
+  const copyToClipboard = () => {
+    if (!customRoomId) return;
+    navigator.clipboard.writeText(customRoomId);
+    toast.success("Invite Code copied to clipboard!");
+  };
+
   const handleJoinRoom = () => {
     if (!customRoomId.trim()) {
       toast.error("Please enter a room ID.");
@@ -215,23 +228,46 @@ export default function CollaboratorPanel({
           </div>
 
           {/* Suggested Room ID */}
+          {/* Secure Room ID Generator */}
           {!isConnected && (
-            <div
-              style={{
-                padding: "12px 14px",
-                backgroundColor: "#eef2ff",
-                borderRadius: "10px",
-                marginBottom: "24px",
-                cursor: "pointer",
-              }}
-              onClick={() => setCustomRoomId(blogId)}
-            >
-              <p style={{ margin: 0, fontSize: "0.78rem", color: "#4f46e5", fontWeight: 600 }}>
-                💡 Use blog ID as room ID
-              </p>
-              <p style={{ margin: "4px 0 0", fontSize: "0.75rem", color: "#818cf8", wordBreak: "break-all" }}>
-                {blogId}
-              </p>
+            <div style={{ marginBottom: "24px", display: "flex", gap: "8px" }}>
+              <button
+                onClick={generateRandomRoomId}
+                style={{
+                  flex: 1,
+                  padding: "10px",
+                  backgroundColor: "#eef2ff",
+                  color: "#4f46e5",
+                  border: "1px dashed #a5b4fc",
+                  borderRadius: "10px",
+                  fontSize: "0.85rem",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                }}
+                onMouseEnter={(e) => (e.target.style.backgroundColor = "#e0e7ff")}
+                onMouseLeave={(e) => (e.target.style.backgroundColor = "#eef2ff")}
+              >
+                ✨ Generate Secure Code
+              </button>
+
+              <button
+                onClick={copyToClipboard}
+                title="Copy to clipboard"
+                style={{
+                  padding: "10px 16px",
+                  backgroundColor: "#f8fafc",
+                  color: "#64748b",
+                  border: "1px solid #e2e8f0",
+                  borderRadius: "10px",
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                }}
+                onMouseEnter={(e) => (e.target.style.backgroundColor = "#f1f5f9")}
+                onMouseLeave={(e) => (e.target.style.backgroundColor = "#f8fafc")}
+              >
+                📋 Copy
+              </button>
             </div>
           )}
 
