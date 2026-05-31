@@ -9,18 +9,50 @@ export default function Contact() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    
     if (!name || !email || !message) {
       toast.error("Please fill in all fields.");
       return;
     }
-    toast.success("Message sent! We'll get back to you soon.");
-    setName("");
-    setEmail("");
-    setMessage("");
-  };
 
+    const loadingToast = toast.loading("Sending message...");
+
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          access_key: import.meta.env.VITE_WEB3FORMS_KEY,
+          name: name,
+          email: email,
+          message: message,
+        }),
+      });
+
+      const result = await response.json();
+      
+      toast.dismiss(loadingToast);
+
+      if (result.success) {
+        toast.success("Message sent! We'll get back to you soon.");
+        setName("");
+        setEmail("");
+        setMessage("");
+      } else {
+        toast.error(result.message || "Failed to send message. Please try again.");
+      }
+    } catch (error) {
+      toast.dismiss(loadingToast);
+      toast.error("Network error! Please check your connection.");
+      console.error("Submission Error:", error);
+    }
+  };
+  
   return (
     <div
       style={{
