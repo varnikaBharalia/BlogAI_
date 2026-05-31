@@ -56,23 +56,18 @@ router.post("/signin", async (req, res) => {
 
     const token = generateToken(user);
 
-    // res
+    // Use these settings for production (Cross-Origin)
     res.cookie("token", token, {
       httpOnly: true,
-      sameSite: "Lax",
-      secure: false,
+      sameSite: "None", // Required for cross-origin cookies across different domains
+      secure: true,     // Required when sameSite is "None" (forces HTTPS)
       maxAge: 7 * 24 * 60 * 60 * 1000,
     })
-      // .cookie("token", token, {
-      //   httpOnly: true,
-      //   sameSite: "None", // "None" if using cross-origin in production with HTTPS
-      //   secure: true, // true if using HTTPS (e.g., on Vercel)
-      //   maxAge: 7 * 24 * 60 * 60 * 1000,
-      // })
       .status(200)
       .json({
         message: "Login successful",
       });
+
   } catch (err) {
     console.error("Signin Error:", err);
     res.status(500).json({ error: "Internal Server Error" });
