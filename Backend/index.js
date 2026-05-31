@@ -66,18 +66,22 @@ io.on("connection", (socket) => {
   // });
 
   socket.on("join-room", ({ roomId, user }) => {
+
+    if (!user) return;
+
     socket.join(roomId);
     socket.roomId = roomId;
     socket.user = user;
 
     if (!roomUsers[roomId]) roomUsers[roomId] = [];
-    if (!roomUsers[roomId].find(u => u._id === user._id)) {
+    if (!roomUsers[roomId].find(u => u?._id === user?._id)) {
       roomUsers[roomId].push(user);
     }
 
     io.to(roomId).emit("room-users-update", roomUsers[roomId]);
 
     // NEW: Broadcast to everyone ELSE that this user joined
+    const userName = user?.name || "Anonymous";
     socket.to(roomId).emit("user-joined", user.name);
 
     console.log(`User ${user.name} joined room ${roomId}`);
@@ -106,9 +110,9 @@ io.on("connection", (socket) => {
         (u) => u._id !== socket.user._id
       );
       io.to(socket.roomId).emit("room-users-update", roomUsers[socket.roomId]);
-      
+
       // NEW: Broadcast to the room that this user left
-      io.to(socket.roomId).emit("user-left", socket.user.name); 
+      io.to(socket.roomId).emit("user-left", socket.user.name);
     }
     console.log("User disconnected:", socket.id);
   });

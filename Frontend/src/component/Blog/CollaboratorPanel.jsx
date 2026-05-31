@@ -32,7 +32,7 @@ export default function CollaboratorPanel({
       toast.error("Please enter a room ID.");
       return;
     }
-    socket.emit("join-room", { roomId: customRoomId, userId: user._id });
+    socket.emit("join-room", { roomId: customRoomId, user: user });
     setCurrentRoom(customRoomId);
     onEditableChange(true);
     setIsConnected(true);
